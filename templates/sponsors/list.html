@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}قائمة الكافلون{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>قائمة الكافلون</h3>
+    <a href="{% url 'sponsor_add' %}" class="btn btn-success">إضافة كافل جديد</a>
+</div>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead class="table-primary">
+        <tr>
+            <th>الاسم</th>
+            <th>النوع</th>
+            <th>الهاتف</th>
+            <th>البريد الإلكتروني</th>
+            <th>العنوان</th>
+            <th>إجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sponsor in sponsors %}
+        <tr>
+            <td>{{ sponsor.nom }}</td>
+            <td>{{ sponsor.get_type_sponsor_display }}</td>
+            <td>{{ sponsor.telephone }}</td>
+            <td>{{ sponsor.email }}</td>
+            <td>{{ sponsor.adresse }}</td>
+            <td>
+                <a href="{% url 'sponsor_edit' sponsor.pk %}" class="btn btn-sm btn-warning">تعديل</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">لا يوجد كافلون.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}إحصائيات الأيتام{% endblock %}
+{% block content %}
+<h2>إحصائيات الأيتام</h2>
+<p>عدد الأيتام الكلي: {{ total }}</p>
+
+<h4>حسب الجنس</h4>
+<ul>
+{% for g in sexe_count %}
+<li>{{ g.genre }} : {{ g.count }}</li>
+{% endfor %}
+</ul>
+
+<h4>حسب التمدرس</h4>
+<ul>
+{% for s in scolarite_count %}
+<li>{{ s.scolarite }} : {{ s.count }}</li>
+{% endfor %}
+</ul>
+
+<h4>حسب العمر</h4>
+<ul>
+<li>أقل من 6 سنوات: {{ age_groups.moins_6 }}</li>
+<li>6-12 سنة: {{ age_groups.6_12 }}</li>
+<li>12-18 سنة: {{ age_groups.12_18 }}</li>
+<li>أكثر من 18 سنة: {{ age_groups.18_plus }}</li>
+</ul>
+{% endblock %}

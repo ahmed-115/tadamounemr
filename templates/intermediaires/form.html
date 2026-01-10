@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{% if object %}تعديل وسيط{% else %}إضافة وسيط{% endif %}{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        {% if object %}تعديل بيانات الوسيط{% else %}إضافة وسيط جديد{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

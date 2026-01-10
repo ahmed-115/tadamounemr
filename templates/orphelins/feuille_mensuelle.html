@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}كشف مستحقات أيتام{% endblock %}
+{% block content %}
+<h2>كشف مستحقات أيتام جهة {{ type_kafala }} عن شهر {{ mois }} – سنة {{ annee }}</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>الرمز</th>
+            <th>الاسم الكامل</th>
+            <th>الكافل</th>
+            <th>المبلغ</th>
+            <th>ولي الأمر</th>
+            <th>تاريخ الاستلام</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in parrainages %}
+        <tr>
+            <td>{{ p.orphelin.code }}</td>
+            <td>{{ p.orphelin.nom_complet }}</td>
+            <td>{{ p.sponsor.nom }}</td>
+            <td>{{ p.montant_mru }}</td>
+            <td>{{ p.orphelin.nom_tuteur }}</td>
+            <td>{{ p.date_debut }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">لا يوجد كفالات لهذا الشهر</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

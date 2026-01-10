@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}تفاصيل الكفالة{% endblock %}
+
+{% block content %}
+
+<div class="d-print-none mb-3">
+    <button onclick="window.print()" class="btn btn-secondary">
+        🖨️ طباعة
+    </button>
+</div>
+
+<div class="card p-4" id="print-area">
+
+<h4 class="text-center mb-4">بطاقة الكفالة</h4>
+
+<!-- ================= اليتيم ================= -->
+<h5>🧒 معلومات اليتيم</h5>
+<hr>
+<div class="row">
+    <div class="col-md-3">
+        <img src="{{ p.orphelin.photo.url }}" class="img-fluid rounded">
+    </div>
+    <div class="col-md-9">
+        <p><strong>الاسم:</strong> {{ p.orphelin.nom_complet }}</p>
+        <p><strong>الرقم:</strong> {{ p.orphelin.code }}</p>
+        <p><strong>تاريخ الميلاد:</strong> {{ p.orphelin.date_naissance }}</p>
+        <p><strong>العنوان:</strong> {{ p.orphelin.adresse }}</p>
+        <p><strong>ولي الأمر:</strong> {{ p.orphelin.nom_tuteur }} ({{ p.orphelin.telephone_tuteur }})</p>
+    </div>
+</div>
+
+<br>
+
+<!-- ================= الكافل ================= -->
+<h5>🤝 معلومات الكافل</h5>
+<hr>
+<p><strong>الاسم:</strong> {{ p.sponsor.nom }}</p>
+<p><strong>الجنسية:</strong> {{ p.sponsor.nationalite }}</p>
+<p><strong>الهاتف:</strong> {{ p.sponsor.telephone }}</p>
+<p><strong>البريد:</strong> {{ p.sponsor.email }}</p>
+
+<br>
+
+<!-- ================= الوسيط ================= -->
+<h5>🏢 الوسيط</h5>
+<hr>
+{% if p.intermediaire %}
+<p><strong>الاسم:</strong> {{ p.intermediaire.nom }}</p>
+<p><strong>الهاتف:</strong> {{ p.intermediaire.telephone }}</p>
+<p><strong>الجهة:</strong> {{ p.intermediaire.organisation }}</p>
+{% else %}
+<p>— لا يوجد وسيط —</p>
+{% endif %}
+
+<br>
+
+<!-- ================= الكفالة ================= -->
+<h5>💰 بيانات الكفالة</h5>
+<hr>
+<p><strong>نوع الكفالة:</strong> {{ p.get_type_kafala_display }}</p>
+<p><strong>المبلغ:</strong> {{ p.montant }} MRU</p>
+<p><strong>تاريخ البداية:</strong> {{ p.date_debut }}</p>
+<p><strong>تاريخ النهاية:</strong> {{ p.date_fin }}</p>
+<p><strong>الحالة:</strong> {{ p.get_statut_display }}</p>
+
+</div>
+
+{% endblock %}

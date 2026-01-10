@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}بحث الأيتام{% endblock %}
+{% block content %}
+<h2>بحث الأيتام</h2>
+
+<form method="get" class="row mb-3">
+    <div class="col">
+        <input type="text" name="code" placeholder="رقم اليتيم" class="form-control" value="{{ request.GET.code }}">
+    </div>
+    <div class="col">
+        <input type="text" name="nom" placeholder="الاسم الكامل" class="form-control" value="{{ request.GET.nom }}">
+    </div>
+    <div class="col">
+        <input type="text" name="telephone" placeholder="هاتف الولي" class="form-control" value="{{ request.GET.telephone }}">
+    </div>
+    <div class="col">
+        <button type="submit" class="btn btn-primary">بحث</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>الرمز</th>
+            <th>الاسم</th>
+            <th>الهاتف</th>
+            <th>الجنس</th>
+            <th>تاريخ الميلاد</th>
+            <th>الإجراءات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for orphelin in orphelins %}
+        <tr>
+            <td>{{ orphelin.code }}</td>
+            <td>{{ orphelin.nom_complet }}</td>
+            <td>{{ orphelin.telephone_tuteur }}</td>
+            <td>{{ orphelin.get_genre_display }}</td>
+            <td>{{ orphelin.date_naissance }}</td>
+            <td>
+                <a href="{% url 'orphelin_detail' orphelin.pk %}" class="btn btn-info btn-sm">عرض</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">لا يوجد نتائج</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

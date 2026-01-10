@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}كشف المستحقات الشهرية{% endblock %}
+
+{% block content %}
+
+<style>
+@media print {
+    .d-print-none {
+        display: none !important;
+    }
+    body {
+        background: white;
+    }
+    table {
+        font-size: 13px;
+    }
+}
+</style>
+
+<!-- ======================= FILTRES ======================= -->
+<div class="d-print-none">
+
+    <h4 class="mb-3">🔍 البحث و التصفية</h4>
+
+    <form method="get" class="row g-3 mb-4">
+
+        <!-- الشهر -->
+        <div class="col-md-3">
+            <label class="form-label">الشهر</label>
+            <select name="mois" class="form-select">
+                <option value="1" {% if mois == 1 %}selected{% endif %}>يناير</option>
+                <option value="2" {% if mois == 2 %}selected{% endif %}>فبراير</option>
+                <option value="3" {% if mois == 3 %}selected{% endif %}>مارس</option>
+                <option value="4" {% if mois == 4 %}selected{% endif %}>أبريل</option>
+                <option value="5" {% if mois == 5 %}selected{% endif %}>مايو</option>
+                <option value="6" {% if mois == 6 %}selected{% endif %}>يونيو</option>
+                <option value="7" {% if mois == 7 %}selected{% endif %}>يوليو</option>
+                <option value="8" {% if mois == 8 %}selected{% endif %}>أغسطس</option>
+                <option value="9" {% if mois == 9 %}selected{% endif %}>سبتمبر</option>
+                <option value="10" {% if mois == 10 %}selected{% endif %}>أكتوبر</option>
+                <option value="11" {% if mois == 11 %}selected{% endif %}>نوفمبر</option>
+                <option value="12" {% if mois == 12 %}selected{% endif %}>ديسمبر</option>
+            </select>
+        </div>
+
+        <!-- السنة -->
+        <div class="col-md-3">
+            <label class="form-label">السنة</label>
+            <input type="number" name="annee" class="form-control" value="{{ annee }}">
+        </div>
+
+        <!-- الكافل -->
+        <div class="col-md-4">
+            <label class="form-label">الكافل</label>
+            <select name="sponsor" class="form-select">
+                <option value="">جميع الكافلين</option>
+                {% for s in sponsors %}
+                <option value="{{ s.id }}"
+                    {% if sponsor_id == s.id|stringformat:"s" %}selected{% endif %}>
+                    {{ s.nom }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- زر البحث -->
+        <div class="col-md-2 align-self-end">
+            <button class="btn btn-primary w-100">
+                بحث
+            </button>
+        </div>
+
+    </form>
+
+    <button onclick="window.print()" class="btn btn-secondary mb-4">
+        🖨️ طباعة الكشف
+    </button>
+
+</div>
+
+<!-- ======================= TITRE OFFICIEL ======================= -->
+<h4 class="text-center mb-4 fw-bold">
+    كشف مستحقات الأيتام
+    {% if sponsor_id %}
+        – الكافل:
+        {% for s in sponsors %}
+            {% if s.id|stringformat:"s" == sponsor_id %}
+                {{ s.nom }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <br>
+    عن شهر {{ mois }} / {{ annee }}
+</h4>
+
+<!-- ======================= TABLEAU ======================= -->
+<table class="table table-bordered text-center align-middle">
+    <thead class="table-primary">
+        <tr>
+            <th>#</th>
+            <th>اسم اليتيم</th>
+            <th>الرقم</th>
+            <th>اسم الكافل</th>
+            <th>مبلغ الكفالة</th>
+            <th>اسم ولي الأمر</th>
+            <th>التوقيع</th>
+            <th>تاريخ الاستلام</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for t in transactions %}
+        {% if t.parrainage %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ t.parrainage.orphelin.nom_complet }}</td>
+            <td>{{ t.parrainage.orphelin.code }}</td>
+            <td>{{ t.parrainage.sponsor.nom }}</td>
+            <td>{{ t.montant }}</td>
+            <td>{{ t.parrainage.orphelin.nom_tuteur }}</td>
+            <td>............................</td>
+            <td>{{ t.date_creation|date:"Y-m-d" }}</td>
+        </tr>
+        {% endif %}
+    {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">
+                لا توجد بيانات لهذا الشهر
+            </td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}

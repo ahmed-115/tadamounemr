@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}{% if object %}تعديل عملية مالية{% else %}إضافة عملية مالية{% endif %}{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        {% if object %}تعديل عملية مالية{% else %}إضافة عملية مالية جديدة{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary mt-3">حفظ</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

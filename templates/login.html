@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+        .login-card img {
+            width: 100px;
+            margin-bottom: 25px;
+        }
+        .login-card h3 {
+            margin-bottom: 30px;
+            color: #0d6efd;
+        }
+        .form-group {
+            width: 90%;
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-control {
+            width: 100%;
+            height: 50px;
+            font-size: 1rem;
+            border-radius: 8px;
+            padding: 0 15px;
+        }
+        .btn-primary {
+            width: 100%;
+            height: 50px;
+            font-size: 1.1rem;
+            background-color: #6610f2;
+            border-color: #6610f2;
+            border-radius: 8px;
+        }
+        .btn-primary:hover {
+            background-color: #5200b8;
+            border-color: #5200b8;
+        }
+        .alert {
+            text-align: right;
+            font-size: 0.95rem;
+        }
+        .footer-text {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <!-- Logo -->
+    <img src="{% static 'images/logo.png' %}" alt="شعار الجمعية">
+
+    <h3>تسجيل الدخول</h3>
+
+    {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+        اسم المستخدم أو كلمة المرور غير صحيحة
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_username" class="form-label">اسم المستخدم</label>
+            <input type="text" name="username" autofocus required id="id_username" class="form-control" placeholder="أدخل اسم المستخدم">
+        </div>
+
+        <div class="form-group">
+            <label for="id_password" class="form-label">كلمة المرور</label>
+            <input type="password" name="password" required id="id_password" class="form-control" placeholder="أدخل كلمة المرور">
+        </div>
+
+        <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
+    </form>
+
+    <div class="footer-text">
+        © 2026 جمعية التضامن
+    </div>
+</div>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
