@@ -1,1 +1,1 @@
-web: gunicorn core.wsgi
+web: gunicorn tadamunproject.wsgi
