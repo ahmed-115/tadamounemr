@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
 def generer_code_orphelin():
     annee = timezone.now().year
@@ -77,8 +78,22 @@ class Orphelin(models.Model):
     scolarite = models.CharField(max_length=20, choices=SCOLARITE_CHOICES, verbose_name="حالة التمدرس")
     niveau_scolaire = models.CharField(max_length=100, blank=True, verbose_name="المستوى الدراسي")
     etat_sante = models.TextField(blank=True, verbose_name="الحالة الصحية")
-    photo = models.ImageField(upload_to='orphelins/photos/', blank=True, null=True, verbose_name="صورة اليتيم")
-    dossier_pdf = models.FileField(upload_to='orphelins/dossiers/', blank=True, null=True, verbose_name="ملف اليتيم (PDF)")
+    # photo = models.ImageField(upload_to='orphelins/photos/', blank=True, null=True, verbose_name="صورة اليتيم", max_length=255)
+    # dossier_pdf = models.FileField(upload_to='orphelins/dossiers/', blank=True, null=True, verbose_name="ملف اليتيم (PDF)", max_length=255)
+
+    photo = CloudinaryField(
+        'photo',
+        folder='orphelins/photos',
+        blank=True,
+        null=True
+    )
+    dossier_pdf = CloudinaryField(
+        'dossier',
+        resource_type='raw',
+        folder='orphelins/dossiers',
+        blank=True,
+        null=True
+    )
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='actif', verbose_name="وضعية اليتيم")
     date_creation = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ التسجيل")
 
