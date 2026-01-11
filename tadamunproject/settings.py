@@ -45,6 +45,10 @@ INSTALLED_APPS = [
     'core',
 ]
 
+INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -89,9 +93,7 @@ WSGI_APPLICATION = 'tadamunproject.wsgi.application'
 # }
 
 # prod
-DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-}
+DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
 
 # localhost
 # DATABASES = {
