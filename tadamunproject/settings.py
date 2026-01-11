@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'tadamunproject.urls'
 
@@ -85,10 +88,17 @@ WSGI_APPLICATION = 'tadamunproject.wsgi.application'
 #     }
 # }
 
+# prod
 DATABASES = {
     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
+# localhost
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default="postgresql://tadamuon_db:bioaty29BSdXevhxi2VzBqrul3F7uiqb@dpg-d5hdmtumcj7s73avits0-a.virginia-postgres.render.com/tadamuon_db"
+#     )
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
