@@ -25,7 +25,7 @@
 # SECRET_KEY = 'django-insecure-i*9@i)4jfn!roc)kmxf)z%iqhp^i#=9!nq8+f2yooioxm$y@mw'
 
 # # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = Fal se
+# DEBUG = False
 
 # ALLOWED_HOSTS = ['*']
 
@@ -182,7 +182,7 @@
 
 # STATICFILES_STORAGE  =  'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
-# ==================
+# =============
 from pathlib import Path
 import os
 import dj_database_url
@@ -191,7 +191,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-i*9@i)4jfn!roc)kmxf)z%iqhp^i#=9!nq8+f2yooioxm$y@mw'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -259,7 +259,7 @@ WSGI_APPLICATION = 'tadamunproject.wsgi.application'
 
 # ==========================
 # DATABASE
-# ==========================
+# ==========================++++
 
 # DATABASES = {
 #     'default': dj_database_url.config(
