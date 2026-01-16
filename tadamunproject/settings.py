@@ -25,7 +25,7 @@
 # SECRET_KEY = 'django-insecure-i*9@i)4jfn!roc)kmxf)z%iqhp^i#=9!nq8+f2yooioxm$y@mw'
 
 # # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
+# DEBUG = Fal se
 
 # ALLOWED_HOSTS = ['*']
 
@@ -182,7 +182,7 @@
 
 # STATICFILES_STORAGE  =  'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 
-# =============
+# ==================
 from pathlib import Path
 import os
 import dj_database_url
@@ -191,7 +191,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-i*9@i)4jfn!roc)kmxf)z%iqhp^i#=9!nq8+f2yooioxm$y@mw'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -261,12 +261,19 @@ WSGI_APPLICATION = 'tadamunproject.wsgi.application'
 # DATABASE
 # ==========================
 
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default="postgresql://tadamuon_db:bioaty29BSdXevhxi2VzBqrul3F7uiqb@dpg-d5hdmtumcj7s73avits0-a.virginia-postgres.render.com/tadamuon_db",
+#         conn_max_age=600,
+#         ssl_require=True
+#     )
+# }
+
 DATABASES = {
-    'default': dj_database_url.config(
-        default="postgresql://tadamuon_db:bioaty29BSdXevhxi2VzBqrul3F7uiqb@dpg-d5hdmtumcj7s73avits0-a.virginia-postgres.render.com/tadamuon_db",
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 # ==========================
