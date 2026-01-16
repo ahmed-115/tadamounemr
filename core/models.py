@@ -49,7 +49,7 @@ class User(AbstractUser):
 # =====================================================
 # 👶 Orphelins
 # =====================================================
-
+'''
 class Orphelin(models.Model):
     GENRE_CHOICES = (('m', 'ذكر'), ('f', 'أنثى'))
 
@@ -63,9 +63,10 @@ class Orphelin(models.Model):
         ('non_scolarise', 'غير متمدرس'),
         ('hors_age', 'دون سن الدراسة'),
         ('scolarise', 'متمدرس'),
+        ('mahdari', 'محضري'),
     )
 
-    code = models.CharField(max_length=20, unique=True, verbose_name="رقم اليتيم", editable=False)
+    code = models.CharField(max_length=20, unique=True, verbose_name="رقم اليتيم") #, editable=False
     nom_complet = models.CharField(max_length=255, verbose_name="الاسم الكامل")
     nni = models.CharField(max_length=20, unique=True, verbose_name="الرقم الوطني للتعريف")
     genre = models.CharField(max_length=1, choices=GENRE_CHOICES, verbose_name="الجنس")
@@ -96,6 +97,80 @@ class Orphelin(models.Model):
     )
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='actif', verbose_name="وضعية اليتيم")
     date_creation = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ التسجيل")
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = generer_code_orphelin()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "يتيم"
+        verbose_name_plural = "الأيتام"
+
+    def __str__(self):
+        return f"{self.code} - {self.nom_complet}"
+'''
+
+
+
+class Orphelin(models.Model):
+    NATURE_ORPHELIN_CHOICES = (('pere', 'فقد الأب'), ('parents', 'فقد الأبوين'))
+    NIVEAU_CHOICES = (('excellent','ممتاز'),('tres_bon','جيد جدا'),('bon','جيد'),('moyen','متوسط'),('faible','ضعيف'),('tres_faible','ضعيف جدا'))
+    STATUT_CHOICES = (('actif','نشط'),('suspendu','موقوف'),('archive','مؤرشف'),('eligible','مرشح للكفالة'))
+    VERIFICATION_CHOICES = (('en_attente','في انتظار التدقيق'),('valide','مفعل'),('rejete','مرفوض'))
+    ETAT_MERE_CHOICES = (('veuve','أرملة'),('remariee','متزوجة'))
+    TYPE_LOGEMENT_CHOICES = (('maison','منزل'),('arich','عريش'),('banco','بيت من الطين'),('baraque','براكة'))
+    GENRE_CHOICES = (('m','ذكر'),('f','أنثى'))
+    SCOLARITE_CHOICES = (('non_scolarise','غير متمدرس'),('hors_age','دون سن الدراسة'),('scolarise','متمدرس'),('mahdari','محضري'))
+    
+    
+    code = models.CharField(max_length=20, unique=True, verbose_name="رقم اليتيم")
+    nom_complet = models.CharField(max_length=255, verbose_name="الاسم الكامل")
+    nni = models.CharField(max_length=20, unique=True, verbose_name= "الرقم الوطني للتعريف")
+    genre = models.CharField(max_length=1, choices=GENRE_CHOICES, verbose_name="الجنس")
+    date_naissance = models.DateField(verbose_name="تاريخ الميلاد")
+    nature_orphelin = models.CharField(max_length=10, blank=True, choices=NATURE_ORPHELIN_CHOICES, verbose_name="طبيعة اليتم")
+    lien_maps = models.URLField(blank=True, null=True, verbose_name="رابط الموقع (Maps)")
+    nom_tuteur = models.CharField(max_length=255, verbose_name="اسم الولي")
+    telephone_tuteur = models.CharField(max_length=20, verbose_name="هاتف الولي")
+    adresse = models.TextField(verbose_name="العنوان")
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
+
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='eligible', verbose_name="وضعية اليتيم")
+    statut_verification = models.CharField(max_length=20, choices=VERIFICATION_CHOICES, default='en_attente', verbose_name="حالة التدقيق")
+
+    cree_par = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="orphelins_crees")
+    verifie_par = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="orphelins_verifies")
+
+    travail_pere = models.CharField(max_length=255, blank=True, verbose_name="عمل الأب قبل الوفاة")
+    annee_deces_pere = models.IntegerField(blank=True, null=True, verbose_name="سنة وفاة الأب")
+    cause_deces_pere = models.CharField(max_length=255, blank=True, verbose_name="سبب وفاة الأب")
+
+    nom_mere = models.CharField(max_length=255, blank=True, verbose_name="اسم الأم")
+    etat_mere = models.CharField(max_length=20, choices=ETAT_MERE_CHOICES, blank=True, verbose_name="حالة الأم")
+
+    nombre_freres = models.IntegerField(default=0, verbose_name="عدد الإخوة")
+    rang_entre_freres = models.IntegerField(default=1, verbose_name="ترتيبه بين الإخوة")
+    taille_famille = models.IntegerField(default=1, verbose_name="عدد أفراد الأسرة")
+
+    type_logement = models.CharField(max_length=20, choices=TYPE_LOGEMENT_CHOICES, blank=True, verbose_name="نوع السكن")
+    etat_logement = models.CharField(max_length=255, blank=True, verbose_name="حالة السكن")
+
+    travail_tuteur = models.CharField(max_length=255, blank=True, verbose_name="عمل الوصي")
+
+    scolarite = models.CharField(max_length=20, choices=SCOLARITE_CHOICES, verbose_name="حالة التمدرس")
+    niveau_scolaire = models.CharField(max_length=20, choices=NIVEAU_CHOICES, blank=True, verbose_name="المستوى الدراسي")
+    classe = models.CharField(max_length=50, blank=True, verbose_name="الفصل الدراسي")
+    nom_ecole = models.CharField(max_length=255, blank=True, verbose_name="اسم المدرسة")
+
+    etat_sante = models.CharField(max_length=20, choices=NIVEAU_CHOICES, blank=True, verbose_name="المستوى الصحي")
+    niveau_social = models.CharField(max_length=20, blank=True, choices=NIVEAU_CHOICES, verbose_name="المستوى الاجتماعي")
+
+    photo = CloudinaryField('photo', folder='orphelins/photos', blank=True, null=True)
+    dossier_pdf = CloudinaryField('dossier', resource_type='raw', folder='orphelins/dossiers', blank=True, null=True)
+
+    date_creation = models.DateTimeField(auto_now_add=True, verbose_name= 'تاريخ التسجيل')
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -174,11 +249,14 @@ class Parrainage(models.Model):
     intermediaire = models.ForeignKey(Intermediaire, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="الوسيط")
     type_kafala = models.CharField(max_length=20, choices=TYPE_KAFALA_CHOICES, verbose_name="جهة الكفالة")
     montant_mru = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="مبلغ الكفالة بالأوقية")
+    montant_mois = models.DecimalField(max_digits=12, null= True, blank=True, decimal_places=2, verbose_name="المصروف الشهري بالأوقية")
     montant_devise = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, verbose_name="المبلغ بالعملة الأجنبية")
+    montant_devise_mois = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, verbose_name="المبلغ الشهري بالعملة الأجنبية")
     devise = models.CharField(max_length=10, blank=True, verbose_name="العملة")
     solde = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name="الرصيد")
     date_debut = models.DateField(verbose_name="تاريخ بداية الكفالة")
     date_fin = models.DateField(blank=True, null=True, verbose_name="تاريخ نهاية الكفالة")
+    duree = models.CharField(max_length=10, null= True, blank=True, verbose_name="مدة الكفالة")
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='active', verbose_name="الحالة")
 
     class Meta:
@@ -202,10 +280,14 @@ class TransactionFinanciere(models.Model):
 
     type_transaction = models.CharField(max_length=10, choices=TYPE_CHOICES, verbose_name="نوع العملية")
     montant = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="المبلغ")
+    montant_devise = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, verbose_name="المبلغ بالعملة الأجنبية")
     description = models.TextField(verbose_name="الوصف")
     parrainage = models.ForeignKey(Parrainage, on_delete=models.SET_NULL, blank=True, null=True, verbose_name="الكفالة")
     cree_par = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name="أنشئت بواسطة")
     date_creation = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ العملية")
+    mois = models.IntegerField(verbose_name="الشهر", choices=[(i,i) for i in range(1,13)], null=True, blank=True)
+    annee = models.IntegerField(verbose_name="السنة", null=True, blank=True)
+
 
     class Meta:
         verbose_name = "عملية مالية"

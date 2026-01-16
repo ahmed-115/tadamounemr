@@ -38,9 +38,7 @@
             <td>{{ orphelin.get_genre_display }}</td>
             <td>{{ orphelin.date_naissance }}</td>
             <td>
-                <a href="{% url 'orphelin_detail' orphelin.pk %}" class="btn btn-sm btn-info">تفاصيل</a>
-                <a href="{% url 'orphelin_edit' orphelin.pk %}" class="btn btn-sm btn-warning">تعديل</a>
-                <a href="{% url 'orphelin_delete' orphelin.pk %}" class="btn btn-sm btn-danger">حذف</a>
+                <a href="{% url 'orphelin_detail' orphelin.pk %}" class="btn btn-info btn-sm">عرض</a>
             </td>
         </tr>
         {% empty %}

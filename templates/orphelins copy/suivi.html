@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}متابعة {{ orphelin.nom_complet }}{% endblock %}
+{% block content %}
+<h3>متابعة اليتيم: {{ orphelin.nom_complet }}</h3>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>رمز:</strong> {{ orphelin.code }}</p>
+        <p><strong>ولي الأمر:</strong> {{ orphelin.nom_tuteur }} ({{ orphelin.telephone_tuteur }})</p>
+        <p><strong>العنوان:</strong> {{ orphelin.adresse }}</p>
+        <p><strong>حالة التمدرس:</strong> {{ orphelin.get_scolarite_display }}</p>
+        <p><strong>الحالة الصحية:</strong> {{ orphelin.etat_sante }}</p>
+    </div>
+</div>
+
+<h4>الكفالات</h4>
+<table class="table table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>الكافل</th>
+            <th>المدة</th>
+            <th>المبلغ</th>
+            <th>الرصيد</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for parrainage in parrainages %}
+        <tr>
+            <td>{{ parrainage.sponsor.nom }}</td>
+            <td>{{ parrainage.date_debut }} → {{ parrainage.date_fin }}</td>
+            <td>{{ parrainage.montant_mru }}</td>
+            <td>{{ parrainage.solde }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center">لا توجد كفالات.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4>العمليات المالية</h4>
+<table class="table table-striped">
+    <thead class="table-secondary">
+        <tr>
+            <th>النوع</th>
+            <th>المبلغ</th>
+            <th>الوصف</th>
+            <th>تاريخ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in transactions %}
+        <tr>
+            <td>{{ t.get_type_transaction_display }}</td>
+            <td>{{ t.montant }}</td>
+            <td>{{ t.description }}</td>
+            <td>{{ t.date_creation }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center">لا توجد عمليات مالية.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

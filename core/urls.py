@@ -11,11 +11,13 @@ urlpatterns = [
     path('orphelins/<int:pk>/modifier/', views.orphelin_edit, name='orphelin_edit'),
     path('orphelins/<int:pk>/supprimer/', views.orphelin_delete, name='orphelin_delete'),
     path('orphelins/<int:pk>/detail/', views.orphelin_detail, name='orphelin_detail'),
+    path('orphelins/<int:pk>/print/', views.orphelin_print, name='orphelin_print'),
     path('orphelins/recherche/', views.orphelin_search, name='orphelin_search'),
     path('orphelins/statistiques/', views.orphelin_statistiques, name='orphelin_statistiques'),
-    path('orphelins/liste_parrainage/<str:type_kafala>/', views.liste_parrainage, name='liste_parrainage'),
-    path('orphelins/feuille_mensuelle/<str:type_kafala>/', views.feuille_mensuelle, name='feuille_mensuelle'),
+    # path('orphelins/liste_parrainage/<str:type_kafala>/', views.liste_parrainage, name='liste_parrainage'),
+    # path('orphelins/feuille_mensuelle/<str:type_kafala>/', views.feuille_mensuelle, name='feuille_mensuelle'),
     path('orphelins/<int:pk>/suivi/', views.suivi_orphelin, name='suivi_orphelin'),
+    path('orphelins/<int:pk>/suivi/print/', views.suivi_orphelin_print, name='suivi_orphelin_print'),
 
     # ================================
     # SPONSORS
@@ -31,6 +33,7 @@ urlpatterns = [
     path('parrainages/ajouter/', views.parrainage_add, name='parrainage_add'),
     path('parrainages/<int:pk>/modifier/', views.parrainage_edit, name='parrainage_edit'),
     path('parrainages/<int:pk>/detail/', views.parrainage_detail, name='parrainage_detail'),
+    path('parrainages/<int:pk>/print/', views.kafala_print, name='kafala_print'),
 
     # ================================
     # TRANSACTIONS FINANCIERES
@@ -47,11 +50,20 @@ urlpatterns = [
     path('intermediaires/ajouter/', views.intermediaire_add, name='intermediaire_add'),
     path('intermediaires/<int:pk>/modifier/', views.intermediaire_edit, name='intermediaire_edit'),
     
-    
+    # ================================
+    # AUTH
+    # ================================
     path('', views.dashboard, name='dashboard'), 
     path('login/', auth_views.LoginView.as_view(template_name='login.html', redirect_authenticated_user=True), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout')
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 
+
+    # ================================
+    # PAIEMENT
+    # ================================
+    path('paiement/kafalat/', views.paiement_kafalat_form, name='paiement_kafalat_form'),
+    path('paiement/kafalat/preview/', views.paiement_kafalat_preview, name='paiement_kafalat_preview'),
+    path('paiement/kafalat/confirm/', views.paiement_kafalat_confirm, name='paiement_kafalat_confirm'),
 
 
 ]

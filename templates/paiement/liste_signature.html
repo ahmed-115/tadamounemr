@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4" id="print-area">
+
+  <div class="card shadow">
+    <div class="card-header text-center bg-light">
+      <h3>📄 لائحة التوقيع – المصروف الشهري</h3>
+      <p>الكافل: <strong>{{ sponsor.nom }}</strong></p>
+      <p>الشهر: <strong>{{ mois }}</strong> | السنة: <strong>{{ annee }}</strong></p>
+    </div>
+
+    <div class="card-body">
+
+      <table class="table table-bordered text-center">
+        <thead class="table-primary">
+          <tr>
+            <th>اسم اليتيم</th>
+            <th>الوكيل</th>
+            <th>المبلغ الشهري (MRU)</th>
+            <th style="width:30%">رقم الهاتف</th>
+            <th style="width:30%">التوقيع</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for t in transactions %}
+          <tr>
+            <td>{{ t.parrainage.orphelin.nom_complet }}</td>
+            <td>{{ t.parrainage.sponsor.nom }}</td>
+            
+            <td>{{ t.montant }}</td>
+            <td>{{ t.parrainage.sponsor.telephone }}</td>
+            <td>.............</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="row mt-5">
+        <div class="col-6 text-center">
+          <p><strong>توقيع المسؤول المالي</strong></p>
+          <p>___________________________</p>
+        </div>
+
+        <div class="col-6 text-center">
+          <p><strong>توقيع المدير</strong></p>
+          <p>___________________________</p>
+        </div>
+      </div>
+
+      
+
+    </div>
+  </div>
+</div>
+<div class="text-center mt-4">
+    <button onclick="window.print()" class="btn btn-dark btn-lg">
+        🖨️ طباعة اللائحة
+    </button>
+</div>
+
+<style>
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+}
+</style>
+
+{% endblock %}

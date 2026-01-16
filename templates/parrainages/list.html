@@ -2,7 +2,11 @@
 {% block title %}قائمة الكفالات{% endblock %}
 
 {% block content %}
-<h4 class="mb-3">قائمة الكفالات</h4>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>قائمة الكفالات</h3>
+    <a href="{% url 'parrainage_add' %}" class="btn btn-success">إضافة كفالة جديدة</a>
+</div>
+
 
 <form method="get" class="row g-2 mb-4">
     <!-- Recherche -->
@@ -45,8 +49,10 @@
             <th>الكافل</th>
             <th>جهة الكفالة</th>
             <th>المبلغ</th>
+            <th>المصروف الشهري</th>
             <th>الرصيد</th>
             <th>الحالة</th>
+            <th>إجراءات</th>
         </tr>
     </thead>
     <tbody>
@@ -56,10 +62,12 @@
             <td>{{ p.sponsor.nom }}</td>
             <td>{{ p.get_type_kafala_display }}</td>
             <td>{{ p.montant_mru }}</td>
+            <td>{{ p.montant_mois }}</td>
             <td>{{ p.solde }}</td>
             <td>{{ p.get_statut_display }}</td>
             <td>
                 <a href="{% url 'parrainage_detail' p.pk %}" class="btn btn-sm btn-info">تفاصيل</a>
+                <a href="{% url 'kafala_print' p.pk %}" class="btn btn-sm btn-secondary"> طباعة استمارة كفالة</a>
             </td>
         </tr>
         {% empty %}

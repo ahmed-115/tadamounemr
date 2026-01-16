@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}حذف يتيم{% endblock %}
+{% block content %}
+<h2>تأكيد الحذف</h2>
+<p>هل أنت متأكد من حذف اليتيم: {{ object.nom_complet }}؟</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">حذف</button>
+    <a href="{% url 'orphelin_list' %}" class="btn btn-secondary">إلغاء</a>
+</form>
+{% endblock %}

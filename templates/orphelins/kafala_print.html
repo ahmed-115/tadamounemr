@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===== RESET ET A4 ===== */
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+/* body, html {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+    font-family: "Tahoma", Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+} */
+ 
+
+/* ===== PRINT PAGE ===== */
+.print-page {
+    width: 100%;
+    min-height: 297mm;
+    padding: 10mm 12mm 30mm 12mm; /* bottom padding pour signatures */
+    background: white;
+    position: relative;
+}
+
+/* ===== HEADER ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.logo {
+    width: 85px;
+}
+
+.photo {
+    width: 85px;
+    height: 105px;
+    border: 1px solid #333;
+    object-fit: cover;
+}
+
+.header-center {
+    text-align: center;
+    font-size: 11pt;
+    line-height: 1.4;
+}
+
+/* ===== TITRE ===== */
+.main-title {
+    text-align: center;
+    font-size: 22pt;
+    font-weight: bold;
+    color: green;
+    margin: 15px 0 10px;
+}
+
+/* ===== TABLE INFO ===== */
+.table-info {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5pt;
+    margin-top: 5mm;
+}
+
+.table-info td {
+    padding: 5px 4px;
+    border: none; /* plus de tirets */
+}
+
+.table-info td.label {
+    width: 38%;
+    font-weight: bold;
+}
+
+/* ===== SIGNATURES ===== */
+.signatures {
+    position: absolute;
+    bottom: 45mm;
+    left: 12mm;
+    right: 12mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+/* ===== SAFE PRINT ===== */
+img {
+    max-width: 100%;
+    max-height: 105px;
+}
+
+table, tr, td {
+    page-break-inside: avoid;
+}
+
+/* ===== CACHER ELEMENTS BASE.HTML ===== */
+@media print {
+    .container, .container-fluid, .row {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    nav, footer, .btn, .no-print { display: none !important; }
+}
+@media print {
+    nav, footer, .btn, .no-print {
+        display: none !important;
+    }
+
+    /* Supprimer entête/footers du navigateur */
+    @page {
+        margin: 0;
+    }
+}
+</style>
+
+{% if auto_print %}
+<script>
+window.onload = function () {
+    window.print();
+};
+</script>
+{% endif %}
+
+<div class="no-print text-center my-4">
+    <a href="?print=1" class="btn btn-success btn-lg">🖨️ طباعة استمارة الكفالة</a>
+</div>
+
+<div class="print-page">
+
+    <!-- HEADER -->
+    <div class="header">
+        {% if orphelin.photo %}
+            <img src="{{ orphelin.photo.url }}" class="photo">
+        {% endif %}
+
+        <div class="header-center">
+            جمعية التضامن للتنمية والثقافة<br>
+            وصل اعتراف رقم 0335 بتاريخ 2017/12/21<br>
+            نواكشوط – موريتانيا
+        </div>
+
+        <img src="{% static 'images/logo.png' %}" class="logo">
+    </div>
+
+    <!-- TITLE -->
+    <div class="main-title">
+        <br><br>
+        استمارة كفالة يتيم رقم {{ orphelin.code }}
+        <br><br>
+    </div>
+
+    <!-- CONTENT -->
+    <table class="table-info">
+        <tr><td class="label">اسم الكافل</td><td>{{ parrainage.sponsor.nom }}</td></tr>
+        <tr><td class="label">الدولة</td><td>{{ parrainage.sponsor.nationalite }}</td></tr>
+        <tr><td class="label">اسم المكفول</td><td>{{ orphelin.nom_complet }}</td></tr>
+        <tr><td class="label">جنس اليتيم</td><td>{{ orphelin.get_genre_display }}</td></tr>
+        <tr><td class="label">تاريخ الميلاد</td><td>{{ orphelin.date_naissance }}</td></tr>
+        <tr><td class="label">الدولة</td><td>{{ orphelin.nationalite }}</td></tr>
+        <tr><td class="label">ولي أمر المكفول</td><td>{{ orphelin.nom_tuteur }}</td></tr>
+        <tr><td class="label">بداية الكفالة</td><td>{{ parrainage.date_debut }}</td></tr>
+        <tr><td class="label">مدة الكفالة</td><td>{{ parrainage.duree }} سنة</td></tr>
+        <tr><td class="label">قيمة الكفالة</td><td>{{ parrainage.montant }} درهم</td></tr>
+        <tr><td class="label">المصروف الشهري</td><td>{{ parrainage.montant_mensuel }} درهم</td></tr>
+    </table>
+
+    <!-- SIGNATURES -->
+    <div class="signatures">
+        <div>
+            محفوظ حرمه<br>
+            مسؤول الأيتام
+        </div>
+        <div>
+            سليمان محمد اجماني<br>
+            رئيس الجمعية
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

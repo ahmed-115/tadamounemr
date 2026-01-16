@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+    #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+    }
+    .no-print {
+        display: none;
+    }
+}
+
+/* تصميم الصفحة للطباعة */
+#print-area {
+    font-family: "Arial", "Tahoma";
+    position: relative;
+}
+
+/* الخلفية المائية (الشعار في الخلف) */
+.watermark {
+    position: absolute;
+    top: 35%;
+    left: 30%;
+    opacity: 0.08;
+    width: 300px;
+    z-index: -1;
+}
+
+/* رأس الصفحة */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+}
+
+/* الشعار */
+.logo {
+    width: 120px;
+}
+
+/* صورة اليتيم */
+.orphan-photo {
+    width: 140px;
+    height: 170px;
+    object-fit: cover;
+    border: 1px solid #000;
+}
+
+/* عنوان الوثيقة */
+.title-box {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* خط فاصل */
+.separator {
+    border-top: 2px solid #000;
+    margin: 15px 0;
+}
+
+/* محتوى المعلومات */
+.info p {
+    margin: 6px 0;
+    line-height: 1.4;
+}
+
+/* التوقيعات */
+.signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 80px;
+    text-align: center;
+}
+.signature-box {
+    width: 45%;
+}
+.signature-line {
+    margin-top: 60px;
+    border-top: 1px solid #000;
+}
+</style>
+
+<button class="btn btn-primary no-print mb-3" onclick="window.print()">🖨️ طباعة الصفحة</button>
+
+<div id="print-area">
+
+    <!-- الشعار كخلفية مائية -->
+    <img src="/static/images/logo.png" class="watermark">
+
+    <!-- رأس الصفحة -->
+    <div class="header">
+        <div>
+            <img src="/static/images/logo.png" class="logo">
+        </div>
+
+        <div class="title-box">
+            <div>الجمهورية الإسلامية الموريتانية</div>
+            <div>جمعية التضامن لكفالة الأيتام</div>
+            <div>استمارة كفالة يتيم رقم: {{ orphelin.code }}</div>
+        </div>
+
+        <div>
+            {% if orphelin.photo %}
+            <img src="{{ orphelin.photo.url }}" class="orphan-photo">
+            {% else %}
+            <div style="width:140px;height:170px;border:1px solid #000;text-align:center;padding-top:70px;">
+                لا توجد صورة
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- المعلومات (منظمة بدون جدول) -->
+    <div class="info">
+        <p><strong>الاسم الكامل:</strong> {{ orphelin.nom_complet }}</p>
+        <p><strong>الرقم الوطني:</strong> {{ orphelin.nni }}</p>
+        <p><strong>الجنس:</strong> {{ orphelin.get_genre_display }}</p>
+        <p><strong>تاريخ الميلاد:</strong> {{ orphelin.date_naissance }}</p>
+
+        <p><strong>الولي:</strong> {{ orphelin.nom_tuteur }} | الهاتف: {{ orphelin.telephone_tuteur }}</p>
+        <p><strong>عمل الوصي:</strong> {{ orphelin.travail_tuteur }}</p>
+
+        <p><strong>العنوان:</strong> {{ orphelin.adresse }}</p>
+
+        {% if orphelin.lien_maps %}
+        <p><strong>رابط الموقع:</strong> 
+           <a href="{{ orphelin.lien_maps }}" target="_blank">عرض على الخريطة</a>
+        </p>
+        {% endif %}
+
+        <p><strong>طبيعة اليتم:</strong> {{ orphelin.nature_orphelin }}</p>
+        <p><strong>اسم الأب:</strong> {{ orphelin.nom_pere }}</p>
+        <p><strong>سنة وفاة الأب:</strong> {{ orphelin.annee_deces_pere }}</p>
+        <p><strong>سبب الوفاة:</strong> {{ orphelin.cause_deces_pere }}</p>
+
+        <p><strong>اسم الأم:</strong> {{ orphelin.nom_mere }} | حالتها: {{ orphelin.statut_mere }}</p>
+
+        <p><strong>عدد الإخوة:</strong> {{ orphelin.nombre_freres }} | ترتيب اليتيم: {{ orphelin.rang_orphelin }}</p>
+
+        <p><strong>نوع السكن:</strong> {{ orphelin.type_habitat }} | حالته: {{ orphelin.etat_habitat }}</p>
+
+        <p><strong>المرحلة التعليمية:</strong> {{ orphelin.phase_scolaire }}</p>
+        <p><strong>الفصل:</strong> {{ orphelin.classe_scolaire }}</p>
+        <p><strong>المدرسة:</strong> {{ orphelin.nom_ecole }}</p>
+
+        <p><strong>المستوى الاجتماعي:</strong> {{ orphelin.get_niveau_social_display }}</p>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- التوقيعات -->
+    <div class="signatures">
+        <div class="signature-box">
+            <strong>إمضاء المدير</strong>
+            <div class="signature-line"></div>
+        </div>
+
+        <div class="signature-box">
+            <strong>إمضاء المشرف الميداني</strong>
+            <div class="signature-line"></div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

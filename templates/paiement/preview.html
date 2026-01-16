@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-warning">
+      <h4>⚠️ معاينة الكفالات قبل الدفع</h4>
+      <p>الكافل: <strong>{{ sponsor.nom }}</strong> | شهر: {{ mois }} | سنة: {{ annee }}</p>
+    </div>
+
+    <div class="card-body">
+
+      {% if parrainages %}
+      <table class="table table-bordered text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>اليتيم</th>
+            <th>الوسيط</th>
+            <th>المصروف الشهري (MRU)</th>
+            <th>العملة الأجنبية</th>
+          </tr>
+        </thead>
+
+        <tbody>
+        {% for p in parrainages %}
+          <tr>
+            <td>{{ p.orphelin.nom_complet }}</td>
+            <td>{{ p.intermediaire }}</td>
+            <td>{{ p.montant_mois }}</td>
+            <td>{{ p.montant_devise_mois }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <form method="post" action="{% url 'paiement_kafalat_confirm' %}">
+        {% csrf_token %}
+        <input type="hidden" name="sponsor" value="{{ sponsor.id }}">
+        <input type="hidden" name="mois" value="{{ mois }}">
+        <input type="hidden" name="annee" value="{{ annee }}">
+        <input type="hidden" name="description" value="{{ description }}">
+
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'paiement_kafalat_form' %}" class="btn btn-secondary">⬅️ رجوع</a>
+          <button type="submit" class="btn btn-success btn-lg">✔️ تأكيد الدفع</button>
+        </div>
+      </form>
+
+      {% else %}
+      <div class="alert alert-success">
+        ✅ لا توجد كفالات غير مدفوعة لهذا الكافل في هذا الشهر.
+      </div>
+      <a href="{% url 'paiement_kafalat_form' %}" class="btn btn-primary">رجوع</a>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

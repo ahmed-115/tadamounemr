@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h4>💳 دفع الكفالات الشهرية</h4>
+    </div>
+
+    <div class="card-body">
+      <form method="post" action="{% url 'paiement_kafalat_preview' %}">
+        {% csrf_token %}
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">الكافل</label>
+            <select name="sponsor" class="form-select" required>
+              <option value="">-- اختر الكافل --</option>
+              {% for s in sponsors %}
+              <option value="{{ s.id }}">{{ s.nom }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">الشهر</label>
+            <select name="mois" class="form-select">
+              {% for m in mois %}
+              <option value="{{ m }}">{{ m }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold">السنة</label>
+            <select name="annee" class="form-select">
+              {% for a in annees %}
+              <option value="{{ a }}">{{ a }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">الوصف</label>
+          <textarea name="description" class="form-control" rows="3">
+صرف المصروف الشهري للكفالات
+          </textarea>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-warning btn-lg">
+            👁️ معاينة ما سيتم دفعه قبل التأكيد
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -8,50 +8,27 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from datetime import date
 
-from django.contrib import messages
 
 # ================================
 # ORPHELINS
 # ================================
-@login_required
+
 def orphelin_list(request):
     orphelins = Orphelin.objects.all().order_by('-date_creation')
     return render(request, 'orphelins/list.html', {'orphelins': orphelins})
 
-
-# def orphelin_add(request):
-#     if request.method == 'POST':
-#         form = OrphelinForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             obj = form.save(commit=False)
-#             if request.user.is_authenticated:
-#                 obj.created_by = request.user
-#             obj.save()
-#             return redirect('orphelin_list')
-#     else:
-#         form = OrphelinForm()
-#     return render(request, 'orphelins/form.html', {'form': form})
-
-
-@login_required
 def orphelin_add(request):
     if request.method == 'POST':
         form = OrphelinForm(request.POST, request.FILES)
         if form.is_valid():
-            obj = form.save(commit=False)
-            # Remplir automatiquement le champ cree_par avec l'utilisateur connecté
-            obj.cree_par = request.user
-            obj.save()
+            form.save()
             return redirect('orphelin_list')
     else:
         form = OrphelinForm()
     return render(request, 'orphelins/form.html', {'form': form})
 
-
-@login_required
 def orphelin_edit(request, pk):
     orphelin = get_object_or_404(Orphelin, pk=pk)
-
     if request.method == 'POST':
         form = OrphelinForm(request.POST, request.FILES, instance=orphelin)
         if form.is_valid():
@@ -59,10 +36,8 @@ def orphelin_edit(request, pk):
             return redirect('orphelin_list')
     else:
         form = OrphelinForm(instance=orphelin)
-
     return render(request, 'orphelins/form.html', {'form': form, 'object': orphelin})
 
-@login_required
 def orphelin_delete(request, pk):
     orphelin = get_object_or_404(Orphelin, pk=pk)
     if request.method == 'POST':
@@ -70,20 +45,12 @@ def orphelin_delete(request, pk):
         return redirect('orphelin_list')
     return render(request, 'orphelins/confirm_delete.html', {'object': orphelin})
 
-@login_required
 def orphelin_detail(request, pk):
     orphelin = get_object_or_404(Orphelin, pk=pk)
     return render(request, 'orphelins/detail.html', {'orphelin': orphelin})
 
-@login_required
-def orphelin_print(request, pk):
-    orphelin = get_object_or_404(Orphelin, pk=pk)
-    return render(request, 'orphelins/print.html', {'orphelin': orphelin})
-
-@login_required
 def orphelin_search(request):
     query = Q()
-
     code = request.GET.get('code')
     nom = request.GET.get('nom')
     telephone = request.GET.get('telephone')
@@ -100,69 +67,33 @@ def orphelin_search(request):
 
 def orphelin_statistiques(request):
     total = Orphelin.objects.count()
-
-    # Genre avec label arabe
     sexe_count = Orphelin.objects.values('genre').annotate(count=Count('id'))
-    for item in sexe_count:
-        item['label'] = dict(Orphelin.GENRE_CHOICES).get(item['genre'], item['genre'])
-
-    # Scolarité avec label arabe
     scolarite_count = Orphelin.objects.values('scolarite').annotate(count=Count('id'))
-    for item in scolarite_count:
-        item['label'] = dict(Orphelin.SCOLARITE_CHOICES).get(item['scolarite'], item['scolarite'])
 
+    # Regrouper par âge
     now = timezone.now().date()
-
     age_groups = {
-        'moins_6': Orphelin.objects.filter(
-            date_naissance__gt=now.replace(year=now.year - 6)
-        ).count(),
-
-        '6_12': Orphelin.objects.filter(
-            date_naissance__lte=now.replace(year=now.year - 6),
-            date_naissance__gt=now.replace(year=now.year - 12)
-        ).count(),
-
-        '12_18': Orphelin.objects.filter(
-            date_naissance__lte=now.replace(year=now.year - 12),
-            date_naissance__gt=now.replace(year=now.year - 18)
-        ).count(),
-
-        '18_plus': Orphelin.objects.filter(
-            date_naissance__lte=now.replace(year=now.year - 18)
-        ).count(),
+        'moins_6': Orphelin.objects.filter(date_naissance__gt=now.replace(year=now.year-6)).count(),
+        '6_12': Orphelin.objects.filter(date_naissance__lte=now.replace(year=now.year-6),
+                                        date_naissance__gt=now.replace(year=now.year-12)).count(),
+        '12_18': Orphelin.objects.filter(date_naissance__lte=now.replace(year=now.year-12),
+                                         date_naissance__gt=now.replace(year=now.year-18)).count(),
+        '18_plus': Orphelin.objects.filter(date_naissance__lte=now.replace(year=now.year-18)).count(),
     }
-
-    # Statut avec label arabe
-    statut_count = Orphelin.objects.values('statut').annotate(count=Count('id'))
-    for item in statut_count:
-        item['label'] = dict(Orphelin.STATUT_CHOICES).get(item['statut'], item['statut'])
-
-    # Validation avec label arabe
-    validation_count = Orphelin.objects.values('statut_verification').annotate(count=Count('id'))
-    for item in validation_count:
-        item['label'] = dict(Orphelin.VERIFICATION_CHOICES).get(item['statut_verification'], item['statut_verification'])
 
     context = {
         'total': total,
         'sexe_count': sexe_count,
         'scolarite_count': scolarite_count,
-        'age_groups': age_groups,
-        'statut_count': statut_count,
-        'validation_count': validation_count,
+        'age_groups': age_groups
     }
-
     return render(request, 'orphelins/statistiques.html', context)
-
 
 def liste_parrainage(request, type_kafala):
     parrainages = Parrainage.objects.filter(type_kafala=type_kafala)
     orphelins = [p.orphelin for p in parrainages]
-    return render(
-        request,
-        'orphelins/liste_parrainage.html',
-        {'orphelins': orphelins, 'type_kafala': type_kafala},
-    )
+    return render(request, 'orphelins/liste_parrainage.html', {'orphelins': orphelins, 'type_kafala': type_kafala})
+
 
 
 def parrainage_list(request):
@@ -174,13 +105,15 @@ def parrainage_list(request):
         'orphelin', 'sponsor', 'intermediaire'
     )
 
+    # 🔍 Recherche
     if q:
         parrainages = parrainages.filter(
-            Q(orphelin__code__icontains=q)
-            | Q(orphelin__nom_complet__icontains=q)
-            | Q(sponsor__nom__icontains=q)
+            Q(orphelin__code__icontains=q) |
+            Q(orphelin__nom_complet__icontains=q) |
+            Q(sponsor__nom__icontains=q)
         )
 
+    # 🎯 Filtres
     if type_kafala:
         parrainages = parrainages.filter(type_kafala=type_kafala)
 
@@ -195,67 +128,23 @@ def parrainage_list(request):
             'q': q,
             'type_kafala': type_kafala,
             'statut': statut,
-        },
+        }
     )
+
 
 
 def feuille_mensuelle(request, type_kafala):
     now = timezone.now()
-    parrainages = Parrainage.objects.filter(
-        type_kafala=type_kafala,
-        date_debut__month=now.month,
-        date_debut__year=now.year,
-    )
-
-    return render(
-        request,
-        'orphelins/feuille_mensuelle.html',
-        {
-            'parrainages': parrainages,
-            'mois': now.month,
-            'annee': now.year,
-            'type_kafala': type_kafala,
-        },
-    )
-
+    mois = now.month
+    annee = now.year
+    parrainages = Parrainage.objects.filter(type_kafala=type_kafala, date_debut__month=mois, date_debut__year=annee)
+    return render(request, 'orphelins/feuille_mensuelle.html', {'parrainages': parrainages, 'mois': mois, 'annee': annee, 'type_kafala': type_kafala})
 
 def suivi_orphelin(request, pk):
     orphelin = get_object_or_404(Orphelin, pk=pk)
     parrainages = Parrainage.objects.filter(orphelin=orphelin)
-    transactions = TransactionFinanciere.objects.filter(
-        parrainage__in=parrainages
-    )
-
-    return render(
-        request,
-        'orphelins/suivi.html',
-        {
-            'orphelin': orphelin,
-            'parrainages': parrainages,
-            'transactions': transactions,
-        },
-    )
-
-def suivi_orphelin_print(request, pk):
-    orphelin = get_object_or_404(Orphelin, pk=pk)
-    parrainages = Parrainage.objects.filter(orphelin=orphelin)
-    transactions = TransactionFinanciere.objects.filter(
-        parrainage__in=parrainages
-    )
-
-    # هل نطبع مباشرة؟
-    auto_print = request.GET.get("print") == "1"
-
-    return render(
-        request,
-        'orphelins/suivi_print.html',
-        {
-            'orphelin': orphelin,
-            'parrainages': parrainages,
-            'transactions': transactions,
-            'auto_print': auto_print,
-        },
-    )
+    transactions = TransactionFinanciere.objects.filter(parrainage__in=parrainages)
+    return render(request, 'orphelins/suivi.html', {'orphelin': orphelin, 'parrainages': parrainages, 'transactions': transactions})
 
 # ================================
 # SPONSORS
@@ -454,137 +343,3 @@ def intermediaire_edit(request, pk):
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
-
-
-
-
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-
-def kafala_print(request, pk):
-    parrainage = get_object_or_404(Parrainage, pk=pk)
-    orphelin= parrainage.orphelin
-
-
-    auto_print = request.GET.get("print") == "1"
-    print('parrainage.sponsor.nom', parrainage)
-
-    return render(
-        request,
-        "orphelins/kafala_print.html",
-        {
-            "orphelin": orphelin,
-            "parrainage": parrainage,
-            "auto_print": auto_print,
-            "today": timezone.now().date(),
-        },
-    )
-
-
-# ----------------------------------------------------
-# PAIEMENT
-# ----------------------------------------------------
-@login_required
-def paiement_kafalat_form(request):
-    now = timezone.now()
-
-    context = {
-        "sponsors": Sponsor.objects.all().order_by("nom"),
-        "mois": list(range(1, 13)),
-        "annees": list(range(now.year - 5, now.year + 15)),
-    }
-    return render(request, "paiement/form.html", context)
-
-
-
-@login_required
-def paiement_kafalat_preview(request):
-    if request.method != "POST":
-        return redirect("paiement_kafalat_form")
-
-    sponsor_id = request.POST.get("sponsor")
-    mois = int(request.POST.get("mois"))
-    annee = int(request.POST.get("annee"))
-    description = request.POST.get("description")
-
-    sponsor = get_object_or_404(Sponsor, id=sponsor_id)
-
-    # 🔍 Récupérer toutes les kafalat actives du sponsor
-    parrainages = Parrainage.objects.filter(
-        sponsor=sponsor,
-        statut="active"
-    )
-
-    # ❌ Exclure celles déjà payées ce mois-ci
-    parrainages_a_payer = []
-    for p in parrainages:
-        deja_payee = TransactionFinanciere.objects.filter(
-            parrainage=p,
-            mois=mois,
-            annee=annee,
-            type_transaction="sortie"
-        ).exists()
-
-        if not deja_payee:
-            parrainages_a_payer.append(p)
-
-    context = {
-        "sponsor": sponsor,
-        "mois": mois,
-        "annee": annee,
-        "description": description,
-        "parrainages": parrainages_a_payer,
-    }
-
-    return render(request, "paiement/preview.html", context)
-
-
-
-@login_required
-def paiement_kafalat_confirm(request):
-    if request.method != "POST":
-        return redirect("paiement_kafalat_form")
-
-    sponsor_id = request.POST.get("sponsor")
-    mois = int(request.POST.get("mois"))
-    annee = int(request.POST.get("annee"))
-    description = request.POST.get("description")
-
-    sponsor = get_object_or_404(Sponsor, id=sponsor_id)
-
-    parrainages = Parrainage.objects.filter(
-        sponsor=sponsor,
-        statut="active"
-    )
-
-    transactions_creees = []
-
-    for p in parrainages:
-        deja_payee = TransactionFinanciere.objects.filter(
-            parrainage=p,
-            mois=mois,
-            annee=annee,
-            type_transaction="sortie"
-        ).exists()
-
-        if not deja_payee:
-            t = TransactionFinanciere.objects.create(
-                type_transaction="sortie",
-                montant=p.montant_mois,
-                montant_devise=p.montant_devise_mois,
-                description=description,
-                parrainage=p,
-                cree_par=request.user,
-                mois=mois,
-                annee=annee,
-            )
-            transactions_creees.append(t)
-
-    context = {
-        "sponsor": sponsor,
-        "mois": mois,
-        "annee": annee,
-        "transactions": transactions_creees,
-    }
-
-    return render(request, "paiement/liste_signature.html", context)

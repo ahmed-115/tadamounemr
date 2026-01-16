@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}تفاصيل {{ orphelin.nom_complet }}{% endblock %}
+
 {% block content %}
 <div class="card mb-3">
     <div class="row g-0">
@@ -8,22 +9,58 @@
             <img src="{{ orphelin.photo.url }}" class="img-fluid rounded-start" alt="صورة اليتيم">
         </div>
         {% endif %}
+
         <div class="col-md-9">
             <div class="card-body">
                 <h5 class="card-title">{{ orphelin.nom_complet }} ({{ orphelin.code }})</h5>
+
                 <p><strong>الجنس:</strong> {{ orphelin.get_genre_display }}</p>
                 <p><strong>تاريخ الميلاد:</strong> {{ orphelin.date_naissance }}</p>
                 <p><strong>ولي الأمر:</strong> {{ orphelin.nom_tuteur }} ({{ orphelin.telephone_tuteur }})</p>
                 <p><strong>العنوان:</strong> {{ orphelin.adresse }}</p>
+                {% if orphelin.latitude and orphelin.longitude %}
+                <p><strong>الموقع:</strong> <a href="https://www.google.com/maps?q={{ orphelin.latitude }},{{ orphelin.longitude }}" target="_blank">عرض على الخريطة</a></p>
+                {% endif %}
+
+                <p><strong>حالة التدقيق:</strong> 
+                    {% if orphelin.validation_status == 'pending' %}<span class="badge bg-warning text-dark">قيد المراجعة</span>
+                    {% elif orphelin.validation_status == 'validated' %}<span class="badge bg-success">مفعل</span>
+                    {% else %}<span class="badge bg-danger">مرفوض</span>{% endif %}
+                </p>
+
+                <p><strong>وضعية الكفالة:</strong> 
+                    {% if orphelin.statut == 'actif' %}نشط
+                    {% elif orphelin.statut == 'suspendu' %}موقوف
+                    {% else %}مؤرشف{% endif %}
+                </p>
+
                 <p><strong>حالة التمدرس:</strong> {{ orphelin.get_scolarite_display }} | مستوى: {{ orphelin.niveau_scolaire }}</p>
+                <p><strong>المرحلة التعليمية:</strong> {{ orphelin.phase_scolaire }} | الفصل: {{ orphelin.classe_scolaire }} | المدرسة: {{ orphelin.nom_ecole }}</p>
+
                 <p><strong>الحالة الصحية:</strong> {{ orphelin.etat_sante }}</p>
+                <p><strong>المستوى الاجتماعي:</strong> {{ orphelin.get_niveau_social_display }}</p>
+
+                <p><strong>طبيعة اليتم:</strong> {{ orphelin.nature_orphelin }} | 
+                   <strong>أب قبل الوفاة:</strong> {{ orphelin.nom_pere }} | 
+                   <strong>سنة وفاة الأب:</strong> {{ orphelin.annee_deces_pere }} | 
+                   <strong>سبب الوفاة:</strong> {{ orphelin.cause_deces_pere }}</p>
+                <p><strong>الأم:</strong> {{ orphelin.nom_mere }} | حالة الأم: {{ orphelin.statut_mere }}</p>
+                <p><strong>أفراد الأسرة:</strong> {{ orphelin.nombre_freres }} | ترتيب اليتيم: {{ orphelin.rang_orphelin }}</p>
+                <p><strong>السكن:</strong> نوع: {{ orphelin.type_habitat }} | حالة: {{ orphelin.etat_habitat }}</p>
+                <p><strong>عمل الوصي:</strong> {{ orphelin.travail_tuteur }}</p>
+
                 {% if orphelin.dossier_pdf %}
-                <a href="{{ orphelin.dossier_pdf.url }}" class="btn btn-secondary">تحميل ملف PDF</a>
+                <a href="{{ orphelin.dossier_pdf.url }}" class="btn btn-secondary mt-2">تحميل ملف PDF</a>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
 
-<a href="{% url 'suivi_orphelin' orphelin.pk %}" class="btn btn-info">متابعة اليتيم</a>
+<a href="{% url 'suivi_orphelin' orphelin.pk %}" class="btn btn-info mt-3">متابعة اليتيم</a>
+<a href="{% url 'orphelin_edit' orphelin.pk %}" class="btn btn-warning mt-3">تعديل</a>
+<a href="{% url 'orphelin_print' orphelin.pk %}" class="btn btn-secondary mt-3">طباعة استمارة كفالة يتيم</a>
+<a href="{% url 'suivi_orphelin_print' orphelin.pk %}" class="btn btn-secondary mt-3"> 🖨️ طباعة تقرير المتابعة</a>
+
+
 {% endblock %}

@@ -40,6 +40,7 @@ class UserAdmin(admin.ModelAdmin):
 # =====================================================
 # 👶 ORPHELINS
 # =====================================================
+'''
 @admin.register(Orphelin)
 class OrphelinAdmin(admin.ModelAdmin):
     list_display = (
@@ -67,7 +68,7 @@ class OrphelinAdmin(admin.ModelAdmin):
     )
 
     readonly_fields = (
-        'code',
+        # 'code',
         'photo_preview',
         'dossier_preview',
         'date_creation',
@@ -132,6 +133,122 @@ class OrphelinAdmin(admin.ModelAdmin):
             )
         return "—"
     dossier_preview.short_description = "ملف اليتيم"
+'''
+
+@admin.register(Orphelin)
+class OrphelinAdmin(admin.ModelAdmin):
+
+    # ======= ما يظهر في القائمة =======
+    list_display = (
+        "code",
+        "nom_complet",
+        "nni",
+        "genre",
+        "scolarite",
+        "statut",
+        "statut_verification",
+        "afficher_photo",
+        "date_creation",
+    )
+
+    # ======= البحث =======
+    search_fields = (
+        "code",
+        "nom_complet",
+        "nni",
+        "nom_tuteur",
+        "telephone_tuteur",
+        "nom_ecole",
+    )
+
+    # ======= الفلاتر الجانبية =======
+    list_filter = (
+        "statut",
+        "statut_verification",
+        "nature_orphelin",
+        "genre",
+        "scolarite",
+        "niveau_social",
+        "etat_mere",
+        "type_logement",
+        "date_creation",
+    )
+
+    # ======= الترتيب الافتراضي =======
+    ordering = ("-date_creation",)
+
+    # ======= التقسيم داخل صفحة التفاصيل =======
+    fieldsets = (
+        ("📌 معلومات الهوية", {
+            "fields": ("code", "nom_complet", "nni", "genre", "date_naissance", "nature_orphelin", "lien_maps")
+        }),
+
+        ("👨‍👩‍👦 الأسرة والوصي", {
+            "fields": (
+                "nom_tuteur", "telephone_tuteur", "adresse",
+                "nom_mere", "etat_mere",
+                "nombre_freres", "rang_entre_freres", "taille_famille",
+                "travail_tuteur",
+            )
+        }),
+
+        ("⚰️ معلومات الأب", {
+            "fields": ("travail_pere", "annee_deces_pere", "cause_deces_pere"),
+            "classes": ("collapse",),
+        }),
+
+        ("🏠 السكن", {
+            "fields": ("type_logement", "etat_logement"),
+            "classes": ("collapse",),
+        }),
+
+        ("🎓 التعليم", {
+            "fields": ("scolarite", "niveau_scolaire", "classe", "nom_ecole"),
+        }),
+
+        ("🩺 الوضع الصحي والاجتماعي", {
+            "fields": ("etat_sante", "niveau_social"),
+        }),
+
+        ("📂 المرفقات", {
+            "fields": ("photo", "dossier_pdf"),
+        }),
+
+        ("🔐 الحالة والإدارة", {
+            "fields": ("statut", "statut_verification", "cree_par", "verifie_par"),
+        }),
+    )
+
+    # ======= يجعل code غير قابل للتعديل بعد الإنشاء =======
+    readonly_fields = ("code", "date_creation", "afficher_photo")
+
+    # ======= صورة مصغرة جميلة في الإدارة =======
+    def afficher_photo(self, obj):
+        if obj.photo:
+            return format_html(
+                '<img src="{}" width="80" height="80" style="border-radius:8px;" />',
+                obj.photo.url
+            )
+        return "لا توجد صورة"
+
+    afficher_photo.short_description = "الصورة"
+
+    # ======= حفظ المستخدم الذي أنشأ اليتيم تلقائيًا =======
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.cree_par = request.user
+        super().save_model(request, obj, form, change)
+
+    # ======= زر سريع لتفعيل التدقيق =======
+    actions = ["valider_orphelins"]
+
+    @admin.action(description="✅ تفعيل الأيتام المختارين")
+    def valider_orphelins(self, request, queryset):
+        queryset.update(
+            statut_verification="valide",
+            verifie_par=request.user
+        )
+
 
 
 # =====================================================
@@ -189,7 +306,9 @@ class ParrainageAdmin(admin.ModelAdmin):
         'sponsor',
         'type_kafala',
         'montant_mru',
+        'montant_mois',
         'montant_devise',
+        'montant_devise_mois',
         'solde',
         'statut',
         'date_debut',

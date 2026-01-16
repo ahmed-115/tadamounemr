@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}لوائح الأيتام حسب جهة الكفالة{% endblock %}
+{% block content %}
+<h2>الأيتام - جهة الكفالة: {{ type_kafala }}</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>الرمز</th>
+            <th>الاسم الكامل</th>
+            <th>الهاتف</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in orphelins %}
+        <tr>
+            <td>{{ o.code }}</td>
+            <td>{{ o.nom_complet }}</td>
+            <td>{{ o.telephone_tuteur }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">لا يوجد أيتام لهذه الجهة</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

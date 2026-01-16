@@ -17,10 +17,13 @@
 }
 </style>
 
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>العمليات المالية</h3>
+    <a href="{% url 'transaction_add' %}" class="btn btn-success">إضافة عملية مالية جديدة</a>
+</div>
+
 <!-- ======================= FILTRES ======================= -->
 <div class="d-print-none">
-
-    <h4 class="mb-3">🔍 البحث و التصفية</h4>
 
     <form method="get" class="row g-3 mb-4">
 

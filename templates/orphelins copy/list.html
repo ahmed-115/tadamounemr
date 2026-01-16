@@ -55,12 +55,12 @@
 
             <!-- حالة التدقيق -->
             <td>
-                {% if orphelin.statut_verification == 'en_attente' %}
+                {% if orphelin.validation_status == 'pending' %}
                     <span class="badge bg-warning text-dark">قيد المراجعة</span>
-                {% elif orphelin.statut_verification == 'valide' %}
+                {% elif orphelin.validation_status == 'validated' %}
                     <span class="badge bg-success">مُفعّل</span>
                 {% else %}
-                    <span class="badge bg-danger">مرفوض</span>
+                    <span class="badge bg-danger">قيد التدقيق</span>
                 {% endif %}
             </td>
 

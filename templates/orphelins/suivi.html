@@ -1,15 +1,45 @@
 {% extends 'base.html' %}
 {% block title %}متابعة {{ orphelin.nom_complet }}{% endblock %}
+
 {% block content %}
 <h3>متابعة اليتيم: {{ orphelin.nom_complet }}</h3>
 
 <div class="card mb-3">
     <div class="card-body">
         <p><strong>رمز:</strong> {{ orphelin.code }}</p>
+        <p><strong>الرقم الوطني:</strong> {{ orphelin.nni }}</p>
         <p><strong>ولي الأمر:</strong> {{ orphelin.nom_tuteur }} ({{ orphelin.telephone_tuteur }})</p>
         <p><strong>العنوان:</strong> {{ orphelin.adresse }}</p>
-        <p><strong>حالة التمدرس:</strong> {{ orphelin.get_scolarite_display }}</p>
+        {% if orphelin.latitude and orphelin.longitude %}
+        <p><strong>رابط الموقع:</strong> <a href="https://www.google.com/maps?q={{ orphelin.latitude }},{{ orphelin.longitude }}" target="_blank">عرض على الخريطة</a></p>
+        {% endif %}
+        <p><strong>طبيعة اليتم:</strong> {{ orphelin.nature_orphelin }}</p>
+        <p><strong>مرحلة تعليمية:</strong> {{ orphelin.niveau_scolaire }}</p>
+        <p><strong>الفصل الدراسي:</strong> {{ orphelin.classe }}</p>
+        <p><strong>اسم المدرسة:</strong> {{ orphelin.nom_ecole }}</p>
+        <p><strong>المستوى الاجتماعي:</strong> {{ orphelin.get_niveau_social_display }}</p>
         <p><strong>الحالة الصحية:</strong> {{ orphelin.etat_sante }}</p>
+        <p><strong>حالة التدقيق:</strong>
+            {% if orphelin.validation_status == 'pending' %}
+                <span class="badge bg-warning text-dark">قيد المراجعة</span>
+            {% elif orphelin.validation_status == 'validated' %}
+                <span class="badge bg-success">مُفعّل</span>
+            {% else %}
+                <span class="badge bg-danger">مرفوض</span>
+            {% endif %}
+        </p>
+        <p><strong>الأب قبل الوفاة:</strong> {{ orphelin.nom_pere }} / سنة الوفاة: {{ orphelin.annee_deces_pere }} / سبب الوفاة: {{ orphelin.cause_deces_pere }}</p>
+        <p><strong>الأم:</strong> {{ orphelin.nom_mere }} / الحالة: {{ orphelin.statut_mere }}</p>
+        <p><strong>عدد الأخوة:</strong> {{ orphelin.nombre_freres }} / ترتيب اليتيم بينهم: {{ orphelin.position_frere }}</p>
+        <p><strong>عدد أفراد الأسرة:</strong> {{ orphelin.nombre_membres_famille }}</p>
+        <p><strong>نوع السكن:</strong> {{ orphelin.type_logement }} / حالة السكن: {{ orphelin.statut_logement }}</p>
+        <p><strong>عمل الوصي:</strong> {{ orphelin.travail_tuteur }}</p>
+        {% if orphelin.photo %}
+        <p><strong>صورة اليتيم:</strong><br><img src="{{ orphelin.photo.url }}" class="img-fluid" style="max-width:200px;"></p>
+        {% endif %}
+        {% if orphelin.dossier_pdf %}
+        <p><strong>ملف اليتيم (PDF):</strong> <a href="{{ orphelin.dossier_pdf.url }}" target="_blank">تحميل الملف</a></p>
+        {% endif %}
     </div>
 </div>
 
@@ -19,7 +49,10 @@
         <tr>
             <th>الكافل</th>
             <th>المدة</th>
-            <th>المبلغ</th>
+            <th>المبلغ (أوقية)</th>
+            <th>المبلغ (عملة أجنبية)</th>
+            <th>المصروف الشهري (عملة أجنبية)</th>
+            <th>المصروف الشهري بالأوقية</th>
             <th>الرصيد</th>
         </tr>
     </thead>
@@ -29,10 +62,13 @@
             <td>{{ parrainage.sponsor.nom }}</td>
             <td>{{ parrainage.date_debut }} → {{ parrainage.date_fin }}</td>
             <td>{{ parrainage.montant_mru }}</td>
+            <td>{{ parrainage.montant_devise }} {{ parrainage.devise }}</td>
+            <td>{{ parrainage.montant_devise_mois }} {{ parrainage.devise }}</td>
+            <td>{{ parrainage.montant_mois }}</td>
             <td>{{ parrainage.solde }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="text-center">لا توجد كفالات.</td></tr>
+        <tr><td colspan="7" class="text-center">لا توجد كفالات.</td></tr>
         {% endfor %}
     </tbody>
 </table>

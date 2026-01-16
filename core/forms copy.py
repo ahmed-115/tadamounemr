@@ -5,57 +5,17 @@ from .models import Orphelin, Sponsor, Parrainage, TransactionFinanciere, Interm
 # ------------------------------
 # Formulaire Orphelin
 # ------------------------------
-# class OrphelinForm(forms.ModelForm):
-#     class Meta:
-#         model = Orphelin
-#         fields = "__all__"
-#         exclude = ["code", "date_creation", "created_by", "validated_by"]
-
-#         widgets = {
-#             'date_naissance': forms.DateInput(attrs={'type': 'date'}),
-#         }
 class OrphelinForm(forms.ModelForm):
     class Meta:
         model = Orphelin
         fields = [
-            "nom_complet",
-            "nni",
-            "genre",
-            "date_naissance",
-            "nature_orphelin",
-            "lien_maps",
-            "nom_tuteur",
-            "telephone_tuteur",
-            "adresse",
-            "latitude",
-            "longitude",
-            # "statut",
-            # "statut_verification",
-            "travail_pere",
-            "annee_deces_pere",
-            "cause_deces_pere",
-            "nom_mere",
-            "etat_mere",
-            "nombre_freres",
-            "rang_entre_freres",
-            "taille_famille",
-            "type_logement",
-            "etat_logement",
-            "travail_tuteur",
-            "scolarite",
-            "niveau_scolaire",
-            "classe",
-            "nom_ecole",
-            "etat_sante",
-            "niveau_social",
-            "photo",
-            "dossier_pdf",
+            'nom_complet', 'nni', 'genre', 'date_naissance', 'nom_tuteur',
+            'telephone_tuteur', 'adresse', 'latitude', 'longitude',
+            'scolarite', 'niveau_scolaire', 'etat_sante', 'photo', 'dossier_pdf', 'statut'
         ]
-
         widgets = {
             'date_naissance': forms.DateInput(attrs={'type': 'date'}),
         }
-
 
 # ------------------------------
 # Formulaire Sponsor
@@ -73,7 +33,7 @@ class ParrainageForm(forms.ModelForm):
         model = Parrainage
         fields = [
             'orphelin', 'sponsor', 'intermediaire', 'type_kafala',
-            'montant_mru', 'montant_mois', 'montant_devise', 'devise', 'solde',
+            'montant_mru', 'montant_devise', 'devise', 'solde',
             'date_debut', 'date_fin', 'statut'
         ]
         widgets = {
